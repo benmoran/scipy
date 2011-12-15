@@ -13,7 +13,7 @@ from scipy.misc import comb, derivative
 from scipy import special
 from scipy import optimize
 from scipy import integrate
-from scipy.special import gammaln as gamln
+from scipy.special import gammaln as gamln, betaln
 
 import inspect
 from numpy import alltrue, where, arange, putmask, \
@@ -2216,12 +2216,12 @@ class beta_gen(rv_continuous):
     def _rvs(self, a, b):
         return mtrand.beta(a,b,self._size)
     def _pdf(self, x, a, b):
-        Px = (1.0-x)**(b-1.0) * x**(a-1.0)
-        Px /= special.beta(a,b)
-        return Px
+        lPx = (b-1.0)*log(1.0-x) + (a-1.0)*log(x)
+        lPx -= special.betaln(a,b)
+        return exp(lPx)
     def _logpdf(self, x, a, b):
         lPx = (b-1.0)*log(1.0-x) + (a-1.0)*log(x)
-        lPx -= log(special.beta(a,b))
+        lPx -= special.betaln(a,b)
         return lPx
     def _cdf(self, x, a, b):
         return special.btdtr(a,b,x)
